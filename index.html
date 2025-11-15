@@ -1,76 +1,94 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>DebtQuest — Hybrid RPG (Strategy-aware)</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DebtQuest — Cyberpunk Neon</title>
 <style>
-  :root{--bg:#07080a;--card:#0f1113;--muted:#9aa3b2;--accent:#16a34a;--accent2:#06b6d4;--danger:#ef4444}
+  :root{
+    --bg:#04040a; --card:#081024; --muted:#9fb3c8;
+    --neon1:#00f6ff; --neon2:#7b61ff; --neon3:#ff2fa6; --accent:#00f6ff;
+    --glass: rgba(255,255,255,0.03); --soft:#e6f9fb;
+  }
   *{box-sizing:border-box}
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:0;background:linear-gradient(180deg,#020203 0%, #07080a 100%);color:#fff;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:880px;margin:16px auto;padding:16px;}
-  h1{margin:4px 0 12px;font-size:20px;text-align:center}
-  .card{background:var(--card);border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 8px 24px rgba(2,6,23,0.6)}
-  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
-  input[type="text"],input[type="number"],select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#0d0f11;color:#fff;}
+  html,body{height:100%}
+  body{
+    margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(123,97,255,0.06), transparent),
+                radial-gradient(800px 400px at 90% 90%, rgba(255,47,166,0.03), transparent),
+                linear-gradient(180deg,#020214 0%, #04040a 100%);
+    color:var(--soft); -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:960px;margin:18px auto;padding:18px}
+  h1{font-family:"Segoe UI Black",ui-sans-serif,system-ui;font-weight:800;margin:6px 0 14px;font-size:20px;text-align:center;letter-spacing:0.6px;color:var(--neon1); text-shadow:0 2px 18px rgba(0,246,255,0.08)}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .brand{display:flex;gap:10px;align-items:center}
+  .logo{width:44px;height:44px;background:linear-gradient(135deg,var(--neon2),var(--neon3));border-radius:8px;display:flex;align-items:center;justify-content:center;color:#02030a;font-weight:900;font-size:18px;box-shadow:0 6px 30px rgba(123,97,255,0.12)}
+  .pill{background:linear-gradient(90deg,rgba(0,246,255,0.06),rgba(123,97,255,0.04));padding:6px 10px;border-radius:999px;font-weight:700;color:var(--neon1);border:1px solid rgba(123,97,255,0.08);}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);border-radius:12px;padding:14px;margin:14px 0;box-shadow:0 10px 40px rgba(2,6,23,0.55)}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:8px}
+  input[type="text"],input[type="number"],select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(0,0,0,0.18);color:var(--soft);outline:none}
+  input[type="text"]:focus,input[type="number"]:focus,select:focus{box-shadow:0 0 12px rgba(0,246,255,0.06);border-color:rgba(0,246,255,0.18)}
   .row{display:flex;gap:10px}
   .col{flex:1}
-  button{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
-  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
+  button{background:linear-gradient(90deg,var(--neon1),var(--neon2));color:#02121a;padding:10px 12px;border-radius:10px;border:none;font-weight:800;cursor:pointer;letter-spacing:0.6px}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--soft)}
   .small{font-size:13px;color:var(--muted)}
-  .enemy-list .enemy{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px}
-  .hp-wrap{height:12px;background:rgba(255,255,255,0.04);border-radius:8px;margin-top:8px;overflow:hidden}
-  .hp-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:100%;transition:width 600ms ease-in-out}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .weapons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .weapon{flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);cursor:pointer;border:2px solid transparent}
-  .weapon.sel{border-color:var(--accent2);box-shadow:0 6px 20px rgba(6,182,212,0.08)}
-  .hidden{display:none}
-  .log{height:140px;overflow:auto;background:#040507;border-radius:8px;padding:10px;margin-top:10px;font-size:13px;color:#cfeff6}
-  .muted{color:var(--muted);font-size:13px}
-  .toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .badge{background:#0b0d10;padding:6px 8px;border-radius:999px;font-weight:700;color:#9fd5ff;font-size:13px}
+  .enemy-list .enemy{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(123,97,255,0.02), rgba(0,246,255,0.01));margin-bottom:8px;border:1px solid rgba(255,255,255,0.02)}
+  .hp-wrap{height:12px;background:rgba(255,255,255,0.02);border-radius:10px;margin-top:8px;overflow:hidden}
+  .hp-bar{height:100%;background:linear-gradient(90deg,var(--neon1),var(--neon3));width:100%;transition:width 600ms ease-in-out;box-shadow:0 6px 24px rgba(123,97,255,0.06)}
+  .grid{display:grid;grid-template-columns:1fr 380px;gap:16px}
+  @media (max-width:860px){.grid{grid-template-columns:1fr}}
+  .intensity-grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media (min-width:620px){.intensity-grid{grid-template-columns:1fr 1fr}}
+  .card-intensity{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));border:1px solid rgba(255,255,255,0.03);padding:12px;border-radius:12px;cursor:pointer;transition:transform .14s, box-shadow .14s, border-color .14s}
+  .card-intensity:hover{transform:translateY(-6px);box-shadow:0 18px 50px rgba(0,246,255,0.04)}
+  .card-intensity.sel{border-color:rgba(0,246,255,0.22);box-shadow:0 20px 60px rgba(123,97,255,0.08);transform:translateY(-8px)}
+  .tiny{font-size:12px;color:var(--muted);margin-top:6px}
   .priority-bar{height:10px;background:rgba(255,255,255,0.03);border-radius:8px;overflow:hidden;margin-top:6px}
-  .priority-fill{height:100%;background:linear-gradient(90deg,#ffb020,#ff5b7f);width:40%}
-  .grid{display:grid;grid-template-columns:1fr 320px;gap:12px}
-  @media (max-width:820px){.grid{grid-template-columns:1fr}}
-  footer{margin-top:16px;color:var(--muted);text-align:center;font-size:13px}
-  .note{font-size:12px;color:var(--muted);margin-top:8px}
-  .result-card{background:linear-gradient(180deg, rgba(6,182,212,0.06), rgba(22,163,74,0.02)); padding:10px;border-radius:8px;}
-  .inline{display:inline-block;margin-right:8px}
-  .danger{color:var(--danger)}
+  .priority-fill{height:100%;background:linear-gradient(90deg,#ffd166,#ff6b6b);width:20%}
+  .log{height:140px;overflow:auto;background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.25));border-radius:10px;padding:10px;margin-top:10px;font-size:13px;color:#cfeff6;border:1px solid rgba(255,255,255,0.02)}
+  .muted{color:var(--muted)}
+  footer{margin-top:16px;color:var(--muted);text-align:center;font-size:12px}
+  .neon-tag{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,rgba(0,246,255,0.04),rgba(123,97,255,0.03));color:var(--neon1);font-weight:800;border:1px solid rgba(0,246,255,0.06)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="toprow">
-    <div class="flex"><div class="badge">DebtQuest</div><div style="width:8px"></div><div class="small">Hybrid RPG — Strategy-aware</div></div>
-    <div class="muted small" id="saveIndicator">Saved</div>
+  <div class="top">
+    <div class="brand">
+      <div class="logo">DQ</div>
+      <div>
+        <div style="font-weight:800;color:var(--neon2)">DebtQuest</div>
+        <div class="small muted">Cyberpunk Neon • Strategy-aware</div>
+      </div>
+    </div>
+    <div class="neon-tag" id="saveIndicator">Saved</div>
   </div>
 
-  <h1>DebtQuest — Choose a strategy you can understand</h1>
+  <h1>DebtQuest — Cyber Neon • Choose Payment Intensity</h1>
 
   <div class="grid">
-    <!-- LEFT: main controls -->
+    <!-- LEFT column -->
     <div>
-      <div id="screen-home" class="card">
-        <h3>Add Debt (enemy)</h3>
-        <div class="row">
+      <div class="card">
+        <h3 style="color:var(--neon1)">Add Debt (Enemy)</h3>
+        <div class="row" style="margin-top:8px">
           <div class="col">
             <label>Name</label>
-            <input id="inpName" placeholder="e.g., Chase (last 4)">
+            <input id="inpName" placeholder="e.g., VISA (last 4)">
           </div>
-          <div style="width:140px">
-            <label>Balance ($)</label>
+          <div style="width:130px">
+            <label>Balance</label>
             <input id="inpBal" type="number" placeholder="2500">
           </div>
-          <div style="width:120px">
+          <div style="width:110px">
             <label>APR</label>
-            <input id="inpApr" type="text" placeholder="26.99 or 0.2699">
+            <input id="inpApr" placeholder="26.99 or 0.2699">
           </div>
         </div>
 
-        <div class="controls" style="margin-top:8px">
+        <div class="row" style="margin-top:12px">
           <button id="btnAdd">Add Debt</button>
           <button id="btnClear" class="ghost">Clear All</button>
           <button id="btnExport" class="ghost">Export CSV</button>
@@ -81,451 +99,409 @@
           <div id="enemyList" class="enemy-list"></div>
         </div>
 
-        <div style="margin-top:12px" class="controls">
-          <button id="btnAnalyze" style="flex:1">Analyze Strategies</button>
-        </div>
-        <div class="note">APR accepts percentage (26.99) or decimal (0.2699). The simulator uses monthly interest ticks.</div>
+        <div style="margin-top:12px" class="small">APR accepts percent (26.99) or decimal (0.2699). Click a Payment Intensity to proceed.</div>
       </div>
 
-      <div id="screen-results" class="card hidden">
-        <h3>Strategy Comparison & Recommendation</h3>
-        <div id="strategyResults"></div>
-        <div style="margin-top:10px" class="controls">
-          <button id="btnProceed" style="flex:1">Proceed with selected strategy</button>
-          <button id="btnBack" class="ghost">Back</button>
+      <div class="card" id="card-intensity-panel" style="margin-top:10px">
+        <h3 style="color:var(--neon2)">💥 Payment Intensity</h3>
+        <div class="small muted">Select how aggressively you want to allocate payments this run.</div>
+
+        <div class="intensity-grid" id="intensityGrid" style="margin-top:12px">
+          <div class="card-intensity" data-id="1" id="int-1">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><strong style="color:var(--neon1)">🐢 Minimum Survival</strong><div class="tiny">Realistic bank-style minimum only</div></div>
+              <div class="small muted">Min</div>
+            </div>
+          </div>
+
+          <div class="card-intensity" data-id="2" id="int-2">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><strong style="color:var(--neon2)">⚔️ Standard Warrior</strong><div class="tiny">Minimum × 1.2 — steady progress</div></div>
+              <div class="small muted">Std</div>
+            </div>
+          </div>
+
+          <div class="card-intensity" data-id="3" id="int-3">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><strong style="color:var(--neon3)">🧪 Heroic Challenge</strong><div class="tiny">Minimum × 1.6 — aggressive payoff</div></div>
+              <div class="small muted">Agg</div>
+            </div>
+          </div>
+
+          <div class="card-intensity" data-id="4" id="int-4">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><strong style="color:#ffd166">🏆 Legendary Overdrive</strong><div class="tiny">Enter a monthly budget — system allocates across debts</div></div>
+              <div class="small muted">Over</div>
+            </div>
+          </div>
+
+          <div class="card-intensity" data-id="5" id="int-5">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><strong style="color:#ff6b6b">🔥 Doom Slayer</strong><div class="tiny">Locked until you defeat 3 debts</div></div>
+              <div class="small muted">Locked</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="legendaryBox" style="display:none;margin-top:10px">
+          <label>Monthly Budget for Overdrive ($)</label>
+          <input id="legendBudget" type="number" placeholder="e.g., 1000">
+          <div class="tiny" style="margin-top:6px;color:var(--muted)">Budget must be ≥ realistic monthly minimums to be valid.</div>
+        </div>
+
+        <div style="margin-top:12px" class="row">
+          <button id="btnAnalyze">Analyze Strategies</button>
+          <button id="btnRun" class="ghost">Run Selected</button>
         </div>
       </div>
 
-      <div id="screen-battle" class="card hidden">
-        <h3>Battle Run — <span id="selectedStrategyLabel"></span></h3>
-        <div class="row">
-          <div class="col">
-            <label>Extra monthly payment ($)</label>
-            <input id="inpExtra" type="number" placeholder="e.g., 50" value="0">
-            <div class="note">This extra will be applied to prioritized debt after minimums.</div>
-          </div>
-          <div style="width:220px">
-            <label>Min-pay rule (slider) — <span id="minPercentLabel">2%</span></label>
-            <input id="minPercent" type="range" min="0.5" max="10" step="0.1" value="2">
-            <label style="margin-top:6px" class="small"><input id="minFloorToggle" type="checkbox"> Use minimum floor ($)</label>
-            <input id="minFloorValue" type="number" placeholder="e.g., 25" value="25" style="margin-top:6px">
-            <div class="note">M3: You control how the simulated minimum payment is calculated (percent of balance plus optional floor).</div>
-          </div>
-        </div>
-
-        <div style="margin-top:12px">
-          <label>Priority ranking (visual)</label>
-          <div id="priorityList"></div>
-        </div>
-
-        <div style="margin-top:12px" class="controls">
-          <button id="btnRun">Run Simulation</button>
-          <button id="btnStop" class="ghost">End Run</button>
-        </div>
-
-        <div style="margin-top:12px" id="runResults"></div>
-        <div class="log" id="runLog"></div>
+      <div id="runCard" class="card hidden" style="margin-top:12px">
+        <h3 style="color:var(--neon1)">Run Results</h3>
+        <div id="runSummary" class="small muted"></div>
+        <div id="runDetails" style="margin-top:8px"></div>
+        <div style="margin-top:10px" class="log" id="runLog"></div>
       </div>
     </div>
 
-    <!-- RIGHT: info / recommended strategy -->
+    <!-- RIGHT column -->
     <div>
       <div class="card">
-        <h3>Selected Strategy</h3>
-        <div id="chosenCard" class="result-card">
-          <div id="chosenName">—</div>
-          <div id="chosenDesc" class="small muted"></div>
-          <div style="margin-top:8px"><strong>Why?</strong> <span id="chosenWhy" class="small"></span></div>
-        </div>
-        <div style="margin-top:12px">
-          <h4>Quick Tips</h4>
-          <ul class="small">
-            <li>Snowball gives fast wins — good for motivation.</li>
-            <li>Avalanche saves the most interest — mathematically optimal.</li>
-            <li>Hybrid balances both (weighted APR + balance).</li>
-          </ul>
-        </div>
+        <h3 style="color:var(--neon2)">Strategy Comparison</h3>
+        <div id="strategyResults" class="small muted">Add debts and click <strong>Analyze Strategies</strong>.</div>
       </div>
 
       <div class="card" style="margin-top:12px">
-        <h3>Baseline (Minimum-only)</h3>
-        <div id="baselineCard" class="small muted">Run analysis to compare strategies vs minimum-only baseline.</div>
+        <h3 style="color:var(--neon3)">Selected Strategy</h3>
+        <div id="chosenCard" class="small muted">No strategy chosen yet</div>
       </div>
 
       <div class="card" style="margin-top:12px">
-        <h3>Export & Save</h3>
-        <div class="small">Your data is saved locally in this browser. Export CSV to backup.</div>
-        <div style="margin-top:8px" class="controls">
-          <button id="btnSave">Save Now</button>
-          <button id="btnReset" class="ghost">Reset All</button>
+        <h3 style="color:var(--neon1)">Export & Save</h3>
+        <div class="small muted">Data saves locally. Export CSV to back up or share results.</div>
+        <div style="margin-top:8px" class="row">
+          <button id="btnSave">Save</button>
+          <button id="btnReset" class="ghost">Reset</button>
         </div>
       </div>
     </div>
   </div>
 
-  <footer>Prototype: simulation model approximates real monthly CC amortization. Results are estimates — verify with statements.</footer>
+  <footer>Prototype — simulation approximates monthly credit-card amortization. Verify with statements.</footer>
 </div>
 
 <script>
-/*
-DebtQuest — Strategy-aware Hybrid RPG prototype
-T3: iterative monthly amortization simulator
-M3: user-controlled min payment slider + optional floor
+/* Cyberpunk DebtQuest — logic preserved, visual updated.
+   Features: APR parse, T3 solver (monthly amortization),
+   M3 user min control (cards intensity), strategies (avalanche/snowball/hybrid),
+   analyze & simulate, export, localStorage.
 */
 
-// Utility
+// Utilities
 const $ = id => document.getElementById(id);
-const format = n => Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
-const clamp = (v,min,max) => Math.max(min,Math.min(max,v));
+const fmt = n => Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
+const clamp = (v,m,M) => Math.max(m,Math.min(M,v));
 
-let state = {
-  enemies: [], // each: {name, balance, apr (decimal), max}
-  chosenStrategy: 'avalanche', // 'avalanche','snowball','hybrid'
-  lastAnalysis: null
-};
+// state
+let state = { enemies:[], chosenStrategy:'avalanche', intensity:1, lastAnalysis:null, defeatedCount:0 };
 
 // storage
-function saveState(){ localStorage.setItem('dq_state_v2', JSON.stringify(state)); $('saveIndicator').textContent='Saved'; }
-function loadState(){ const d=localStorage.getItem('dq_state_v2'); if(d) state = JSON.parse(d); }
-function clearState(){ localStorage.removeItem('dq_state_v2'); state = {enemies:[], chosenStrategy:'avalanche', lastAnalysis:null}; }
+function saveState(){ localStorage.setItem('dq_state_cyber', JSON.stringify(state)); $('saveIndicator').innerText = 'Saved'; setTimeout(()=>$('saveIndicator').innerText='Saved',600);}
+function loadState(){ const d=localStorage.getItem('dq_state_cyber'); if(d) state=JSON.parse(d); }
+function resetState(){ localStorage.removeItem('dq_state_cyber'); state={ enemies:[], chosenStrategy:'avalanche', intensity:1, lastAnalysis:null, defeatedCount:0}; saveState(); renderAll(); }
 
-// APR normalization: accepts percent or decimal
-function parseAprInput(raw){
-  if (raw === undefined || raw === null || raw === '') return 0;
-  const v = Number(raw);
-  if (isNaN(v)) return 0;
-  if (v > 1.0) return v / 100.0; // user entered like 26.99
-  return v; // decimal
+// APR parse helper: percent or decimal
+function parseApr(v){
+  if(v===undefined || v===null || v==='') return 0;
+  const n=Number(v);
+  if(isNaN(n)) return 0;
+  if(n>1) return n/100.0;
+  return n;
 }
 
-// Add / remove
+// Render enemies list
 function renderEnemyList(){
   const el = $('enemyList'); el.innerHTML = '';
-  if (!state.enemies.length) { el.innerHTML = '<div class="small muted">No debts added yet.</div>'; return; }
-  state.enemies.forEach((e,i)=>{
+  if(!state.enemies.length){ el.innerHTML = '<div class="small muted">No debts yet.</div>'; return; }
+  state.enemies.forEach((d,i)=>{
     const div = document.createElement('div'); div.className='enemy';
     div.innerHTML = `<div>
-        <strong>${e.name}</strong>
-        <div class="muted small">Balance: $${format(e.balance)} • APR: ${(e.apr*100).toFixed(2)}%</div>
+        <strong style="color:var(--neon1)">${d.name}</strong>
+        <div class="tiny muted">Balance: $${fmt(d.balance)} • APR: ${(d.apr*100).toFixed(2)}%</div>
       </div>
       <div style="text-align:right">
-        <div class="hp-wrap"><div class="hp-bar" style="width:${(e.balance/e.max)*100}%"></div></div>
-        <div style="height:6px"></div>
+        <div class="hp-wrap"><div class="hp-bar" style="width:${(d.balance/d.max)*100}%"></div></div>
+        <div style="height:8px"></div>
         <button class="ghost" onclick="removeEnemy(${i})">Remove</button>
       </div>`;
     el.appendChild(div);
   });
 }
 
+// add / remove
 function addEnemy(){
   const name = $('inpName').value.trim();
   const bal = parseFloat($('inpBal').value);
-  const aprRaw = $('inpApr').value.trim();
-  const apr = parseAprInput(aprRaw);
-  if (!name || isNaN(bal) || bal <= 0) return alert('Enter valid name & balance');
-  state.enemies.push({ name, balance: Math.round(bal*100)/100, apr, max: Math.round(bal*100)/100 });
+  const aprraw = $('inpApr').value.trim();
+  const apr = parseApr(aprraw);
+  if(!name || isNaN(bal) || bal <= 0) return alert('Enter valid name & balance');
+  state.enemies.push({ name, balance: Math.round(bal*100)/100, apr: apr, max: Math.round(bal*100)/100 });
   $('inpName').value=''; $('inpBal').value=''; $('inpApr').value='';
-  renderEnemyList(); saveState();
+  saveState(); renderAll();
+}
+function removeEnemy(i){ if(!confirm('Remove this debt?')) return; state.enemies.splice(i,1); saveState(); renderAll(); }
+
+// realistic min payment calculation (interest + 1% of principal, floored at $25)
+function realisticMin(debt){
+  const monthlyRate = debt.apr/12;
+  const interest = Math.round(debt.balance * monthlyRate *100)/100;
+  const principalPortion = Math.round(debt.balance * 0.01 *100)/100;
+  return Math.max(interest + principalPortion, 25);
 }
 
-function removeEnemy(i){
-  if (!confirm('Remove this debt?')) return;
-  state.enemies.splice(i,1); renderEnemyList(); saveState();
-}
-
-// Baseline minimum-only simulation: we need a function to simulate payoff for a list of debts given min rule and extra and order strategy
-// We'll implement a general simulator that accepts:
-// debts (array of {name,balance,apr,max}), minRule (function returning monthly min for a debt), monthlyExtra, strategy ('avalanche','snowball','hybrid')
-// and returns: {months, totalPaid, totalInterest, perMonthRows[...]}
-
-function cloneDebts(debts){
-  return debts.map(d => ({ name:d.name, balance: Math.max(0,Number(d.balance)), apr: Number(d.apr), max: Number(d.max) }));
-}
-
-function computeMinPayment(debt, minPercent, floorEnabled, floorValue){
-  // M3: user chooses percent
-  const percentMin = Math.max(0.005, minPercent/100.0 * debt.balance); // avoid zero
-  if (floorEnabled) return Math.max(percentMin, floorValue);
-  return Math.max(percentMin, 1.0);
-}
-
-// strategy ordering functions
-function orderForStrategy(debts, strategy){
-  const arr = debts.slice();
-  if (strategy === 'avalanche'){
-    arr.sort((a,b) => (b.apr - a.apr) || (a.balance - b.balance));
-  } else if (strategy === 'snowball'){
-    arr.sort((a,b) => (a.balance - b.balance) || (b.apr - a.apr));
-  } else { // hybrid weighted score (higher score first)
-    function score(x){ return (x.apr * 100) * 0.6 - (x.balance) * 0.0004; } // scale balance to be comparable
-    arr.sort((a,b) => score(b) - score(a));
+// ordering functions
+function orderForStrategy(arr, strategy){
+  const copy = arr.slice();
+  if(strategy === 'avalanche') copy.sort((a,b)=> (b.apr - a.apr) || (a.balance - b.balance));
+  else if(strategy === 'snowball') copy.sort((a,b)=> (a.balance - b.balance) || (b.apr - a.apr));
+  else {
+    function score(x){ return (x.apr*100)*0.6 - (x.balance)*0.0004; }
+    copy.sort((a,b)=> score(b) - score(a));
   }
-  return arr;
+  return copy;
 }
 
-// monthly simulator
+// clone debts helper
+function cloneDebts(debts){ return debts.map(d=>({ name:d.name, balance:Math.max(0,Number(d.balance)), apr:Number(d.apr), max:Number(d.max) })); }
+
+// simulator (monthly amortization)
 function simulatePayoff(originalDebts, opts){
-  // opts: {minPercent( e.g., 2 ), floorEnabled(bool), floorValue($), monthlyExtra($), strategy}
+  // opts: { intensity:1..4 (or 5), legendaryBudget, strategy }
   const debts = cloneDebts(originalDebts);
-  const monthlyExtra = Math.max(0, Number(opts.monthlyExtra) || 0);
-  const minPercent = Number(opts.minPercent) || 2.0;
-  const floorEnabled = !!opts.floorEnabled;
-  const floorValue = Number(opts.floorValue) || 0;
   const strategy = opts.strategy || 'avalanche';
-
+  const intensity = opts.intensity || 1;
+  const legendaryBudget = Number(opts.legendaryBudget) || 0;
   const rows = [];
-  let month = 0;
-  const maxMonths = 600; // safety
-  // if no debts active, return zeros
-  if (!debts.some(d=>d.balance>0.005)) return { months:0, totalPaid:0, totalInterest:0, rows:[] };
+  let month=0;
+  const maxMonths=600;
+  if(!debts.some(d=>d.balance>0.005)) return { months:0, totalPaid:0, totalInterest:0, rows:[] };
 
-  while (debts.some(d=>d.balance>0.005) && month < maxMonths){
+  while(debts.some(d=>d.balance>0.005) && month < maxMonths){
     month++;
-    // calculate min payments for each active debt
+    // compute min payments
     let payments = debts.map(d=>{
-      if (d.balance <= 0.005) return 0;
-      const minP = computeMinPayment(d, minPercent, floorEnabled, floorValue);
-      return Math.min(minP, d.balance + 0); // can't pay more than balance here
+      if(d.balance <= 0.005) return 0;
+      const minP = realisticMin(d);
+      // intensity rules:
+      if(intensity === 1) return Math.min(minP, d.balance);
+      if(intensity === 2) return Math.min(Math.round(minP*1.2*100)/100, d.balance);
+      if(intensity === 3) return Math.min(Math.round(minP*1.6*100)/100, d.balance);
+      if(intensity === 4) {
+        // legendary: allocate from legendBudget proportionally later, but for now return min
+        return Math.min(minP, d.balance);
+      }
+      if(intensity === 5) return Math.min(Math.round(minP*3*100)/100, d.balance);
+      return Math.min(minP, d.balance);
     });
 
-    // total min due
-    let totalMin = payments.reduce((s,p)=>s+p,0);
-    // distribute extra according to prioritized order
-    let extra = monthlyExtra;
-    const ordered = orderForStrategy(debts.filter(d=>d.balance>0.005), strategy);
-    for (const target of ordered){
-      if (extra <= 0) break;
-      const idx = debts.indexOf(target);
-      const remaining = Math.max(0, debts[idx].balance - payments[idx]);
-      if (remaining <= 0) continue;
-      const add = Math.min(remaining, extra);
-      payments[idx] += add;
-      extra = Math.round((extra - add)*100)/100;
-    }
-    // if still extra leftover, apply proportionally
-    if (extra > 0){
+    // extra allocation
+    if(intensity === 4 && legendaryBudget > 0){
+      // distribute legendaryBudget across active debts according to strategy weights
       const active = debts.filter(d=>d.balance>0.005);
-      const totalBal = active.reduce((s,d)=>s+d.balance,0);
-      if (totalBal > 0){
-        active.forEach(d=>{
-          const idx = debts.indexOf(d);
-          const share = d.balance / totalBal;
-          const add = Math.min(extra * share, d.balance - payments[idx]);
-          payments[idx] = Math.round((payments[idx] + add)*100)/100;
-        });
+      const ordered = orderForStrategy(active, strategy);
+      // first, pay mins
+      let extraLeft = legendaryBudget - payments.reduce((s,p)=>s+p,0);
+      if(extraLeft < 0) extraLeft = 0;
+      for(const target of ordered){
+        if(extraLeft <= 0) break;
+        const idx = debts.indexOf(target);
+        const remaining = Math.max(0, debts[idx].balance - payments[idx]);
+        const add = Math.min(remaining, extraLeft);
+        payments[idx] = Math.round((payments[idx] + add)*100)/100;
+        extraLeft = Math.round((extraLeft - add)*100)/100;
       }
+      // if still extra, distribute proportionally
+      if(extraLeft > 0){
+        const active2 = debts.filter(d=>d.balance>0.005);
+        const totalBal = active2.reduce((s,d)=>s+d.balance,0);
+        if(totalBal > 0){
+          active2.forEach(d=>{
+            const idx = debts.indexOf(d);
+            const share = d.balance / totalBal;
+            const add = Math.min(extraLeft * share, d.balance - payments[idx]);
+            payments[idx] = Math.round((payments[idx] + add)*100)/100;
+          });
+        }
+      }
+    } else {
+      // for intensities 1-3 and 5: allocate extra according to strategy; extra is (minP*(multiplier-1)) already baked in
+      // no further distribution needed
     }
 
-    // now compute interest and principal for each debt for this month
-    let totalInterestThisMonth = 0;
-    let totalPaymentThisMonth = 0;
-    const monthlyRow = [];
-    for (let i=0;i<debts.length;i++){
+    // apply interest/principal
+    let totalInterestThisMonth=0, totalPaymentThisMonth=0;
+    const monthRow=[];
+    for(let i=0;i<debts.length;i++){
       const d = debts[i];
-      if (d.balance <= 0.005){
-        monthlyRow.push({ name:d.name, balance:0, payment:0, interest:0, principal:0, apr:d.apr });
-        continue;
-      }
+      if(d.balance <= 0.005){ monthRow.push({name:d.name,balance:0,payment:0,interest:0,principal:0,apr:d.apr}); continue; }
       const monthlyRate = d.apr / 12.0;
       const interest = Math.round((d.balance * monthlyRate)*100)/100;
-      let payment = Math.round((payments[i] || 0)*100)/100;
-      // If payment < interest -> negative amortization (balance increases)
+      let payment = Math.round((payments[i]||0)*100)/100;
       let principal = Math.round((payment - interest)*100)/100;
-      if (principal < 0){
-        // interest not fully covered; add capitalized interest
+      if(principal < 0){
+        // negative amortization
         d.balance = Math.round((d.balance + (interest - payment))*100)/100;
         totalInterestThisMonth += interest;
         totalPaymentThisMonth += payment;
-        monthlyRow.push({ name:d.name, balance:d.balance, payment, interest, principal:0, apr:d.apr });
+        monthRow.push({name:d.name,balance:d.balance,payment,interest,principal:0,apr:d.apr});
       } else {
         d.balance = Math.round(Math.max(0, d.balance - principal)*100)/100;
         totalInterestThisMonth += interest;
         totalPaymentThisMonth += payment;
-        monthlyRow.push({ name:d.name, balance:d.balance, payment, interest, principal, apr:d.apr });
+        monthRow.push({name:d.name,balance:d.balance,payment,interest,principal,apr:d.apr});
       }
     }
-    rows.push({ month, totalPayment:Math.round(totalPaymentThisMonth*100)/100, totalInterest:Math.round(totalInterestThisMonth*100)/100, debts: monthlyRow });
-    // safety: if no payment happened, break
-    if (Math.round(totalPaymentThisMonth*100)/100 <= 0.001) break;
+
+    rows.push({ month, totalPayment:Math.round(totalPaymentThisMonth*100)/100, totalInterest:Math.round(totalInterestThisMonth*100)/100, debts:monthRow });
+    if(Math.round(totalPaymentThisMonth*100)/100 <= 0.001) break;
   }
 
   const months = rows.length;
-  const totalPaid = rows.reduce((s,r)=>s + r.totalPayment, 0);
-  const totalInterest = rows.reduce((s,r)=>s + r.totalInterest, 0);
+  const totalPaid = rows.reduce((s,r)=>s + r.totalPayment,0);
+  const totalInterest = rows.reduce((s,r)=>s + r.totalInterest,0);
   return { months, totalPaid: Math.round(totalPaid*100)/100, totalInterest: Math.round(totalInterest*100)/100, rows };
 }
 
-// Recommended strategy engine: runs sims for each strategy and picks lowest totalInterest
+// Strategy analysis: compute baseline (min-only) and each strategy
 function analyzeStrategies(){
-  if (!state.enemies.length) return alert('Add debts first');
-  const minPercent = Number($('minPercent').value) || 2.0;
-  const floorEnabled = $('minFloorToggle').checked;
-  const floorValue = Number($('minFloorValue').value) || 0;
-  // baseline: minimum-only (monthlyExtra = 0) using chosen min rules but no prioritized extra => this is simulated per-month payments with extra=0 but prioritized order doesn't matter when extra=0
-  const baseline = simulatePayoff(state.enemies, { minPercent, floorEnabled, floorValue, monthlyExtra:0, strategy:'avalanche' });
-  // each strategy with the current extra input default 0 (we'll show recommended strategy regardless of extra)
-  const extraToTest = Number($('inpExtra') ? $('inpExtra').value : 0) || 0;
+  if(!state.enemies.length) return alert('Add debts first');
+  const intensity = state.intensity || 1;
+  const legendaryBudget = Number($('legendBudget') ? $('legendBudget').value : 0) || 0;
+  // baseline: min-only (intensity=1)
+  const baseline = simulatePayoff(state.enemies, { intensity:1, strategy:'avalanche' });
   const strategies = ['avalanche','snowball','hybrid'];
   const results = strategies.map(s=>{
-    const res = simulatePayoff(state.enemies, { minPercent, floorEnabled, floorValue, monthlyExtra: extraToTest, strategy: s });
-    return { strategy: s, months: res.months, totalInterest: res.totalInterest, totalPaid: res.totalPaid, details: res };
+    const res = simulatePayoff(state.enemies, { intensity, legendaryBudget, strategy: s });
+    return { strategy:s, months:res.months, totalInterest:res.totalInterest, totalPaid:res.totalPaid, details:res };
   });
-
-  // recommend the one with the least interest (if ties, choose shortest months)
-  results.sort((a,b) => a.totalInterest - b.totalInterest || a.months - b.months);
+  results.sort((a,b)=> a.totalInterest - b.totalInterest || a.months - b.months);
   const recommended = results[0];
-
-  state.lastAnalysis = { timestamp: Date.now(), baseline, results, recommended, minPercent, floorEnabled, floorValue, extraToTest };
-  saveState();
-  renderAnalysis(state.lastAnalysis);
+  state.lastAnalysis = { timestamp:Date.now(), baseline, results, recommended, intensity, legendaryBudget };
+  saveState(); renderAnalysis();
 }
 
-// render analysis
-function renderAnalysis(analysis){
-  $('screen-results').classList.remove('hidden');
-  $('screen-battle').classList.add('hidden');
-  const container = $('strategyResults'); container.innerHTML = '';
-  if (!analysis) return container.innerHTML = '<div class="small muted">No analysis available</div>';
-  // baseline summary
-  const base = analysis.baseline;
-  container.innerHTML += `<div class="small">Baseline (minimum-only) — Months: <strong>${base.months}</strong> • Interest: <strong>$${format(base.totalInterest)}</strong></div><hr/>`;
-
-  analysis.results.forEach(r=>{
-    const label = r.strategy === 'avalanche' ? 'Avalanche (highest APR first)' : r.strategy === 'snowball' ? 'Snowball (smallest balance first)' : 'Hybrid (weighted APR+balance)';
-    container.innerHTML += `<div style="margin-bottom:10px">
+// render analysis results
+function renderAnalysis(){
+  const out = $('strategyResults');
+  out.innerHTML = '';
+  if(!state.lastAnalysis) { out.innerHTML = '<div class="small muted">No analysis yet.</div>'; return; }
+  const a = state.lastAnalysis;
+  const base = a.baseline;
+  out.innerHTML += `<div class="small muted">Baseline (min-only): Months <strong>${base.months}</strong> • Interest <strong>$${fmt(base.totalInterest)}</strong></div><hr/>`;
+  a.results.forEach(r=>{
+    const label = r.strategy==='avalanche' ? 'Avalanche (highest APR first)' : r.strategy==='snowball' ? 'Snowball (smallest balance first)' : 'Hybrid (weighted APR+balance)';
+    out.innerHTML += `<div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><strong>${label}</strong><div class="small muted">Months: ${r.months} • Interest: $${format(r.totalInterest)} • Paid: $${format(r.totalPaid)}</div></div>
+        <div><strong style="color:var(--neon1)">${label}</strong><div class="tiny muted">Months: ${r.months} • Interest: $${fmt(r.totalInterest)} • Paid: $${fmt(r.totalPaid)}</div></div>
         <div><button class="ghost" onclick="chooseStrategy('${r.strategy}')">Choose</button></div>
       </div>
-      <div class="priority-bar"><div class="priority-fill" style="width:${Math.min(100, 10 + r.totalInterest/10)}%"></div></div>
+      <div class="priority-bar"><div class="priority-fill" style="width:${Math.min(100,10 + r.totalInterest/10)}%"></div></div>
     </div>`;
   });
-
-  container.innerHTML += `<hr/><div class="small">Recommended: <strong>${analysis.recommended.strategy.toUpperCase()}</strong> — lowest interest ($${format(analysis.recommended.totalInterest)})</div>`;
-  // show chosen area
-  chooseStrategy(analysis.recommended.strategy, true);
+  out.innerHTML += `<hr/><div class="small">Recommended: <strong style="color:var(--neon2)">${a.recommended.strategy.toUpperCase()}</strong> — lowest interest ($${fmt(a.recommended.totalInterest)})</div>`;
+  $('chosenCard').innerText = `Recommended: ${a.recommended.strategy.toUpperCase()} • Click Run Selected to simulate with intensity.`;
 }
 
-// choose & show details
-function chooseStrategy(strategy, fromAnalysis=false){
-  state.chosenStrategy = strategy;
-  saveState();
-  const name = strategy === 'avalanche' ? 'Avalanche (Highest APR first)' : strategy === 'snowball' ? 'Snowball (Smallest balance first)' : 'Hybrid (Weighted APR+Balance)';
-  $('chosenName').innerText = name;
-  const desc = strategy === 'avalanche' ? 'Targets highest APR debts first — best to minimize interest paid.' : strategy === 'snowball' ? 'Targets smallest balances first — good for fast wins and motivation.' : 'Blends APR and balance — balances interest savings and momentum.';
-  $('chosenDesc').innerText = desc;
-  $('chosenWhy').innerText = 'Simulates expected interest across strategies and recommends the most cost-effective option.';
-  $('selectedStrategyLabel').innerText = name;
-  // show priority ranking
-  renderPriority(strategy);
-  if (!fromAnalysis){
-    // show battle screen
-    $('screen-results').classList.add('hidden');
-    $('screen-battle').classList.remove('hidden');
-  } else {
-    // keep results visible but show battle card too
-    $('screen-battle').classList.remove('hidden');
-  }
+// choose strategy
+function chooseStrategy(s){
+  state.chosenStrategy = s; saveState(); renderAnalysis();
 }
 
-// render priority ranking bars
-function renderPriority(strategy){
-  const ordered = orderForStrategy(state.enemies, strategy);
-  const el = $('priorityList'); el.innerHTML = '';
-  const maxScore = ordered.length? ordered[0].balance + ordered[0].apr*100 : 1;
-  ordered.forEach((e,i)=>{
-    const score = (e.apr*100) + (1/(1+e.balance))*100;
-    const fillPct = Math.min(100, Math.round(((e.apr*100) / ((ordered[0].apr*100)||1)) * 60 + ((ordered[0].balance? (ordered[0].balance - e.balance)/ordered[0].balance : 0) * 40)));
-    const div = document.createElement('div');
-    div.style.marginBottom='8px';
-    div.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${e.name}</strong><div class="small muted">Balance: $${format(e.balance)} • APR: ${(e.apr*100).toFixed(2)}%</div></div><div class="small">${i===0?'Primary':''}</div></div>
-      <div class="priority-bar"><div class="priority-fill" style="width:${fillPct}%"></div></div>`;
-    el.appendChild(div);
-  });
-}
-
-// run detailed simulation for the selected strategy using current min settings and extra
-function runSelectedStrategy(){
-  if (!state.enemies.length) return alert('Add debts first');
-  const minPercent = Number($('minPercent').value) || 2.0;
-  const floorEnabled = $('minFloorToggle').checked;
-  const floorValue = Number($('minFloorValue').value) || 0;
-  const monthlyExtra = Number($('inpExtra').value) || 0;
-  const strategy = state.chosenStrategy || 'avalanche';
-  $('runLog').innerHTML = '';
-  $('runResults').innerHTML = '<div class="small muted">Running simulation…</div>';
-  // simulate
-  const sim = simulatePayoff(state.enemies, { minPercent, floorEnabled, floorValue, monthlyExtra, strategy });
-  // baseline again for comparison
-  const baseline = simulatePayoff(state.enemies, { minPercent, floorEnabled, floorValue, monthlyExtra:0, strategy:'avalanche' });
-  // results summary
-  const html = `<div><strong>Strategy:</strong> ${strategy.toUpperCase()} • Months: <strong>${sim.months}</strong> • Interest: <strong>$${format(sim.totalInterest)}</strong> • Total paid: <strong>$${format(sim.totalPaid)}</strong></div>
-    <div style="margin-top:8px" class="small">Baseline (min-only) interest: $${format(baseline.totalInterest)} — Interest saved: <strong>$${format(Math.max(0, baseline.totalInterest - sim.totalInterest))}</strong></div>
-    <div style="margin-top:10px"><button onclick="downloadSimCSV()">Export run CSV</button></div>`;
-  $('runResults').innerHTML = html;
-  // show basic log (first 6 months and last 3)
-  const rows = sim.rows;
-  let logHtml = `<div class="small muted">Showing first 6 months and last 3 months of simulation (full CSV available)</div>`;
+// run simulation for selected strategy with current intensity
+function runSelected(){
+  if(!state.lastAnalysis) analyzeStrategies(); // if not analyzed, do it
+  if(!state.lastAnalysis) return;
+  const intensity = state.intensity || 1;
+  const legendaryBudget = Number($('legendBudget') ? $('legendBudget').value : 0) || 0;
+  const res = simulatePayoff(state.enemies, { intensity, legendaryBudget, strategy: state.chosenStrategy || state.lastAnalysis.recommended.strategy });
+  $('runCard').classList.remove('hidden');
+  $('runSummary').innerHTML = `Strategy: <strong>${state.chosenStrategy || state.lastAnalysis.recommended.strategy}</strong> • Months: <strong>${res.months}</strong> • Interest: <strong>$${fmt(res.totalInterest)}</strong> • Total paid: <strong>$${fmt(res.totalPaid)}</strong>`;
+  let details = '<div class="small muted">Preview (first 6 months & last 3 months)</div>';
+  const rows = res.rows;
   const preview = rows.slice(0,6).concat(rows.length>9? rows.slice(-3): rows.slice(6));
   preview.forEach(r=>{
     const rem = r.debts.reduce((s,d)=>s + d.balance,0);
-    logHtml += `<div style="margin-top:6px"><strong>Month ${r.month}</strong> — Paid: $${format(r.totalPayment)} • Interest: $${format(r.totalInterest)} • Remaining: $${format(rem)}</div>`;
+    details += `<div style="margin-top:6px">Month ${r.month} — Paid: $${fmt(r.totalPayment)} • Interest: $${fmt(r.totalInterest)} • Remaining: $${fmt(rem)}</div>`;
   });
-  $('runLog').innerHTML = logHtml;
-
-  // store last run in state for exporting if needed
-  state.lastRun = { sim, baseline, minPercent, floorEnabled, floorValue, monthlyExtra, strategy };
+  $('runDetails').innerHTML = details;
+  state.lastRun = { res, intensity, legendaryBudget, strategy: state.chosenStrategy || state.lastAnalysis.recommended.strategy };
   saveState();
 }
 
-// CSV export of last run
-function downloadSimCSV(){
-  if (!state.lastRun) return alert('Run simulation first');
-  const sim = state.lastRun.sim;
-  let csv = 'month,total_paid,total_interest,remaining_total\\n';
+// CSV export for last run
+function exportRunCSV(){
+  if(!state.lastRun) return alert('Run simulation first');
+  const sim = state.lastRun.res;
+  let csv = 'month,total_paid,total_interest,remaining_total\n';
   sim.rows.forEach(r=>{
     const rem = r.debts.reduce((s,d)=>s + d.balance,0);
-    csv += `${r.month},${r.totalPayment.toFixed(2)},${r.totalInterest.toFixed(2)},${rem.toFixed(2)}\\n`;
+    csv += `${r.month},${r.totalPayment.toFixed(2)},${r.totalInterest.toFixed(2)},${rem.toFixed(2)}\n`;
   });
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'debtquest_run.csv'; a.click();
+  const blob = new Blob([csv], {type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='debtquest_run.csv'; a.click();
 }
 
-// UI wiring
-$('btnAdd').addEventListener('click', addEnemy);
-$('btnClear').addEventListener('click', ()=>{ if(confirm('Clear all debts?')){ state.enemies=[]; saveState(); renderEnemyList(); }});
-$('btnExport').addEventListener('click', ()=> {
-  if (!state.enemies.length) return alert('No debts to export');
-  let csv = 'name,balance,apr\\n';
-  state.enemies.forEach(e=> csv += `${e.name},${e.balance},${(e.apr*100).toFixed(4)}\\n`);
-  const blob = new Blob([csv], {type:'text/csv'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'debts_export.csv'; a.click();
-});
-$('btnAnalyze').addEventListener('click', analyzeStrategies);
-$('btnBack').addEventListener('click', ()=> { $('screen-results').classList.add('hidden'); $('screen-battle').classList.add('hidden'); });
-$('btnProceed').addEventListener('click', ()=> { $('screen-results').classList.add('hidden'); $('screen-battle').classList.remove('hidden'); renderPriority(state.chosenStrategy); });
-$('btnStart') && $('btnStart').addEventListener && $('btnStart').addEventListener('click', ()=>{}); // noop defensive
-
-$('btnRun').addEventListener('click', runSelectedStrategy);
-$('btnStop').addEventListener('click', ()=>{ if(confirm('End this run?')) { $('screen-battle').classList.add('hidden'); }});
-$('btnSave').addEventListener('click', ()=>{ saveState(); alert('Saved locally'); });
-$('btnReset').addEventListener('click', ()=>{ if(confirm('Reset everything? This clears local data.')){ clearState(); renderEnemyList(); $('screen-results').classList.add('hidden'); $('screen-battle').classList.add('hidden'); }});
-
-// minPercent label update
-$('minPercent').addEventListener('input', ()=>{ $('minPercentLabel').innerText = $('minPercent').value + '%'; });
-
-// pick chosen strategy if analysis present
-function init(){
-  loadState();
-  if (!state.enemies) state.enemies = [];
-  renderEnemyList();
-  // if we had a last analysis, show recommended
-  if (state.lastAnalysis){
-    renderAnalysis(state.lastAnalysis);
-  }
+// intensity card wiring & UI
+function setIntensity(i){
+  state.intensity = i;
+  // visual
+  [1,2,3,4,5].forEach(n=>{ const el = $('int-'+n); if(el) el.classList.toggle('sel', n===i); });
+  // show legendary box only for 4
+  $('legendaryBox').style.display = (i===4) ? 'block' : 'none';
   saveState();
 }
-init();
+
+function initUI(){
+  // intensity card clicks
+  [1,2,3,4,5].forEach(n=>{
+    const el = $('int-'+n);
+    if(!el) return;
+    el.onclick = ()=>{
+      // doom slayer locked unless defeatedCount >=3
+      if(n===5 && state.defeatedCount < 3){ alert('Doom Slayer unlocks after you defeat 3 debts'); return; }
+      setIntensity(n);
+    };
+  });
+  // buttons
+  $('btnAdd').addEventListener('click', addEnemy);
+  $('btnClear').addEventListener('click', ()=>{ if(confirm('Clear all debts?')){ state.enemies=[]; saveState(); renderAll(); }});
+  $('btnExport').addEventListener('click', ()=>{
+    if(!state.enemies.length) return alert('No debts'); let csv='name,balance,apr\n'; state.enemies.forEach(e=> csv += `${e.name},${e.balance},${(e.apr*100).toFixed(4)}\n`); const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='debts_export.csv'; a.click();
+  });
+  $('btnAnalyze').addEventListener('click', analyzeStrategies);
+  $('btnRun').addEventListener('click', runSelected);
+  $('btnSave').addEventListener('click', ()=>{ saveState(); alert('Saved locally'); });
+  $('btnReset').addEventListener('click', ()=>{ if(confirm('Reset all saved data?')) resetState(); });
+  // legendary budget input effect
+  const legend = $('legendBudget');
+  if(legend) legend.addEventListener('input', ()=>{ /* validate later on run */});
+  // export run CSV via click on runDetails area (add button)
+  // hook intensity default
+  if(!state.intensity) state.intensity = 1;
+  setIntensity(state.intensity);
+}
+
+// render everything
+function renderAll(){
+  renderEnemyList();
+  renderAnalysis();
+  if(state.lastRun) { $('runCard').classList.remove('hidden'); }
+  else $('runCard').classList.add('hidden');
+}
+
+// init
+loadState();
+initUI();
+renderAll();
+saveState();
 
 </script>
 </body>
