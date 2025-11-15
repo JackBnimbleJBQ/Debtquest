@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Debt Quest — Adventure Mode</title>
+<title>Debt Payoff Planner</title>
 
 <style>
     body {
@@ -15,8 +15,9 @@
         text-align: center;
     }
 
-    h2, h3, h4 {
-        margin-bottom: 10px;
+    h2, h3 {
+        margin-bottom: 12px;
+        font-weight: 600;
     }
 
     .card {
@@ -24,16 +25,17 @@
         padding: 18px;
         border-radius: 12px;
         margin: 15px auto;
-        max-width: 640px;
+        max-width: 680px;
         text-align: left;
     }
 
     input {
         width: 95%;
         padding: 10px;
-        margin: 5px 0;
+        margin: 6px 0;
         border-radius: 6px;
         border: none;
+        font-size: 15px;
     }
 
     .btn {
@@ -42,7 +44,7 @@
         border: none;
         margin-top: 10px;
         border-radius: 7px;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: bold;
         cursor: pointer;
     }
@@ -56,46 +58,48 @@
         padding: 10px;
         margin: 8px 0;
         border-radius: 10px;
+        cursor: pointer;
     }
 
     .selected {
-        border: 2px solid gold;
-        box-shadow: 0px 0px 8px gold;
+        border: 2px solid #00eaff;
+        box-shadow: 0px 0px 8px #00eaff;
     }
 </style>
 </head>
 
 <body>
 
-<h2>⚔️ Debt Quest — Adventure Mode</h2>
+<h2>Debt Payoff Planner</h2>
 
-<!-- Add Debt Section -->
+<!-- Add Debt -->
 <div class="card">
-    <h3>➕ Recruit a Debt Enemy</h3>
-    <input id="enemyName" placeholder="Enemy Name (ex: Chase)" />
+    <h3>Add Debt Account</h3>
+    <input id="enemyName" placeholder="Creditor (ex: Chase)" />
     <input id="enemyBalance" placeholder="Balance ($)" type="number" />
-    <input id="enemyAPR" placeholder="APR (%)" type="number" />
-    <button class="btn green" onclick="addEnemy()">Add to Enemy Roster</button>
-    <button class="btn red" onclick="clearEnemies()">Clear All Enemies</button>
+    <input id="enemyAPR" placeholder="APR %" type="number" />
+    <button class="btn green" onclick="addEnemy()">Add Account</button>
+    <button class="btn red" onclick="clearEnemies()">Clear All</button>
 </div>
 
+<!-- Debt List -->
 <div class="card">
-    <h3>🧟 Enemy Roster</h3>
+    <h3>Accounts Entered</h3>
     <div id="enemyList"></div>
 </div>
 
-<!-- Strategy Section -->
+<!-- Strategy Analysis -->
 <div class="card">
-    <h3>🎯 Choose Your Battle Strategy</h3>
-    <button class="btn blue" onclick="analyzeStrategies()">Analyze Strategy Outcomes</button>
+    <h3>Select Payoff Method</h3>
+    <button class="btn blue" onclick="analyzeStrategies()">Compare Methods</button>
     <div id="strategyResults"></div>
 </div>
 
-<!-- RUN SECTION (MOVES HERE NOW, DIRECTLY BELOW STRATEGY!) -->
+<!-- Run Simulation (kept directly under strategy section by request) -->
 <div class="card" id="runSection" style="display:none;">
-    <h3>⚔️ Execute Battle — Turn-Based Simulation</h3>
+    <h3>Run Selected Method</h3>
     <p id="chosenStrategyLabel"></p>
-    <button class="btn green" onclick="runBattle()">Start Battle Run</button>
+    <button class="btn green" onclick="runBattle()">Start Simulation</button>
     <div id="battleLog"></div>
 </div>
 
@@ -103,19 +107,21 @@
 let enemies = [];
 let selectedStrategy = "";
 
-// Add enemy
+// Add debt account
 function addEnemy() {
     const name = enemyName.value.trim();
     const bal = parseFloat(enemyBalance.value);
     const apr = parseFloat(enemyAPR.value);
 
-    if(!name || bal <= 0 || apr <= 0) return alert("Enter valid debt details!");
+    if(!name || bal <= 0 || apr <= 0) {
+        return alert("Enter all fields with valid numbers.");
+    }
 
     enemies.push({ name, bal, apr });
     renderEnemies();
 }
 
-// Render enemy list
+// List accounts
 function renderEnemies() {
     enemyList.innerHTML = enemies.map((e,i)=>`
         <div class="strategy-option">
@@ -125,22 +131,30 @@ function renderEnemies() {
     `).join("");
 }
 
-function removeEnemy(i){ enemies.splice(i,1); renderEnemies(); }
+function removeEnemy(i){
+    enemies.splice(i,1);
+    renderEnemies();
+}
 
-function clearEnemies(){ enemies=[]; renderEnemies(); strategyResults.innerHTML=""; runSection.style.display="none"; }
+function clearEnemies(){
+    enemies=[];
+    renderEnemies();
+    strategyResults.innerHTML="";
+    runSection.style.display="none";
+}
 
-// Analyze strategies
+// Compare payoff methods
 function analyzeStrategies() {
-    if(enemies.length < 1) return alert("Add at least one enemy!");
+    if(enemies.length < 1) return alert("Enter at least one debt account.");
 
-    const aval = "🎯 Avalanche (Highest APR First) — Best for minimizing interest";
-    const snow = "❄️ Snowball (Smallest Balance First) — Best for motivation & quick wins";
-    const hybrid = "⚖️ Hybrid (Balanced Mix) — Weighted APR + Balance Scoring";
+    const method1 = "Avalanche — Pay highest APR first (minimizes total interest)";
+    const method2 = "Snowball — Pay smallest balance first (quick motivation)";
+    const method3 = "Hybrid — Weighted between APR and balance";
 
     strategyResults.innerHTML = `
-        <div class="strategy-option" onclick="selectStrategy('Avalanche')">${aval}</div>
-        <div class="strategy-option" onclick="selectStrategy('Snowball')">${snow}</div>
-        <div class="strategy-option" onclick="selectStrategy('Hybrid')">${hybrid}</div>
+        <div class="strategy-option" onclick="selectStrategy('Avalanche')">${method1}</div>
+        <div class="strategy-option" onclick="selectStrategy('Snowball')">${method2}</div>
+        <div class="strategy-option" onclick="selectStrategy('Hybrid')">${method3}</div>
     `;
 }
 
@@ -148,14 +162,16 @@ function selectStrategy(type){
     selectedStrategy = type;
     [...document.querySelectorAll(".strategy-option")].forEach(div => div.classList.remove("selected"));
     event.target.classList.add("selected");
-    chosenStrategyLabel.innerHTML = `<b>Selected Strategy:</b> ${type}`;
+    chosenStrategyLabel.innerHTML = `<b>Selected:</b> ${type}`;
     runSection.style.display = "block";
 }
 
-// Fake battle run for now – customizable later
+// Placeholder until payoff engine is inserted
 function runBattle() {
-    battleLog.innerHTML = `<p>🧮 Calculating monthly turns… (Prototype mode)</p>
-                           <p>✔ Simulation complete — next update will show full timeline, XP, and victory badge!</p>`;
+    battleLog.innerHTML = `
+        <p>Calculating monthly payoff timeline...</p>
+        <p>Simulation results feature under development.</p>
+    `;
 }
 </script>
 </body>
