@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debt Quest - Adventure Mode</title>
+<style>
+body { font-family: Arial; background: #121212; color: #fff; text-align:center; padding:20px; }
+.card { background:#1e1e1e; padding:20px; border-radius:10px; margin:auto; width:90%; max-width:420px; }
+input, button { width:100%; padding:10px; margin-top:10px; border-radius:6px; border:none; }
+button { background:#4caf50; font-weight:bold; }
+.enemy { background:#292929; padding:10px; border-radius:8px; margin-top:12px; }
+.health-bg { width:100%; height:14px; background:#660000; border-radius:8px; margin-top:5px; }
+.health-bar { height:100%; background:#00ff55; width:100%; border-radius:8px; transition:0.4s; }
+#battle { display:none; }
+</style>
+</head>
+<body>
+
+<h2>⚔️ Debt Quest – Adventure Mode</h2>
+<div class="card" id="create_screen">
+    <h3>Add Debt Enemy</h3>
+    <input id="name" placeholder="Name (e.g. Chase)" />
+    <input id="balance" placeholder="Balance" type="number" />
+    <button onclick="addEnemy()">Add</button>
+    <button style="background:#008cff;" onclick="startBattle()">Start Battle</button>
+</div>
+
+<div id="enemy_list"></div>
+
+<div class="card" id="battle">
+    <h3 id="battle_title"></h3>
+    <div class="health-bg"><div class="health-bar" id="hp_bar"></div></div>
+    <p id="hp_text"></p>
+    <input id="attack" type="number" placeholder="Payment amount" />
+    <button onclick="attackEnemy()">Attack!</button>
+</div>
+
+<script>
+let enemies = JSON.parse(localStorage.getItem("debt_enemies") || "[]");
+let current = 0;
+
+function save() { localStorage.setItem("debt_enemies", JSON.stringify(enemies)); renderList(); }
+
+function addEnemy(){
+    let n = name.value.trim(), b = parseFloat(balance.value);
+    if(!n || !b || b<=0) return alert("Invalid");
+    enemies.push({name:n,hp:b,max:b});
+    save();
+    name.value=""; balance.value="";
+}
+
+function renderList(){
+    let div = document.getElementById("enemy_list");
+    div.innerHTML = "";
+    enemies.forEach((e,i)=>{
+        div.innerHTML += `<div class="enemy">
+            <b>${e.name}</b><br>💰 $${e.hp.toFixed(2)}
+        </div>`;
+    });
+}
+renderList();
+
+function startBattle(){
+    if(enemies.length===0) return alert("Add at least one!");
+    document.getElementById("battle").style.display="block";
+    loadEnemy();
+}
+
+function loadEnemy(){
+    let e = enemies[current];
+    battle_title.innerText = "Enemy: " + e.name;
+    hp_text.innerText = `$${e.hp.toFixed(2)} / $${e.max.toFixed(2)}`;
+    hp_bar.style.width = (e.hp/e.max*100) + "%";
+}
+
+function attackEnemy(){
+    let dmg = parseFloat(document.getElementById("attack").value);
+    if(!dmg || dmg<=0) return;
+    enemies[current].hp -= dmg;
+    if(enemies[current].hp < 0) enemies[current].hp = 0;
+    save();
+    if(enemies[current].hp <= 0){
+        alert("🎉 Victory! Enemy defeated!");
+        current++;
+        if(current >= enemies.length){
+            alert("🏆 All debts defeated!");
+            document.getElementById("battle").style.display="none";
+            return;
+        }
+    }
+    loadEnemy();
+}
+</script>
+
+</body>
+</html>
