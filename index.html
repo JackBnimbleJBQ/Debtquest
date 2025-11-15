@@ -1,96 +1,253 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Debt Quest - Adventure Mode</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Debt Quest — Hybrid RPG</title>
 <style>
-body { font-family: Arial; background: #121212; color: #fff; text-align:center; padding:20px; }
-.card { background:#1e1e1e; padding:20px; border-radius:10px; margin:auto; width:90%; max-width:420px; }
-input, button { width:100%; padding:10px; margin-top:10px; border-radius:6px; border:none; }
-button { background:#4caf50; font-weight:bold; }
-.enemy { background:#292929; padding:10px; border-radius:8px; margin-top:12px; }
-.health-bg { width:100%; height:14px; background:#660000; border-radius:8px; margin-top:5px; }
-.health-bar { height:100%; background:#00ff55; width:100%; border-radius:8px; transition:0.4s; }
-#battle { display:none; }
+  :root{--bg:#0b0b0d;--card:#121217;--muted:#9aa3b2;--accent:#16a34a;--accent2:#06b6d4;}
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:linear-gradient(180deg,#050506 0%, #0b0b0d 100%);color:#fff;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:720px;margin:18px auto;padding:18px;}
+  h1{margin:8px 0 6px;font-size:20px;text-align:center}
+  .card{background:var(--card);border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 6px 20px rgba(2,6,23,0.6);}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type="text"],input[type="number"],select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);background:#0f1113;color:#fff;}
+  .row{display:flex;gap:10px}
+  .col{flex:1}
+  button{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
+  .small{font-size:13px;color:var(--muted)}
+  .enemy-list .enemy{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+  .enemy .meta{font-size:14px}
+  .hp-wrap{height:14px;background:rgba(255,255,255,0.06);border-radius:8px;margin-top:8px;overflow:hidden}
+  .hp-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:100%;transition:width 600ms ease-in-out}
+  .center{text-align:center}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .weapons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .weapon{flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);cursor:pointer;border:2px solid transparent}
+  .weapon.sel{border-color:var(--accent2);box-shadow:0 6px 20px rgba(6,182,212,0.08)}
+  .hidden{display:none}
+  .log{height:140px;overflow:auto;background:#05060a;border-radius:8px;padding:10px;margin-top:10px;font-size:13px;color:#cfeff6}
+  .muted{color:var(--muted);font-size:13px}
+  .flex{display:flex;gap:8px;align-items:center}
+  .badge{background:#111;padding:6px 8px;border-radius:999px;font-weight:700;color:#9fd5ff;font-size:13px}
+  footer{margin-top:20px;color:var(--muted);text-align:center;font-size:13px}
+  .toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .link{color:var(--accent2);text-decoration:underline;cursor:pointer}
 </style>
 </head>
 <body>
+<div class="wrap">
+  <div class="toprow">
+    <div class="flex"><div class="badge">DebtQuest</div><div style="width:8px"></div><div class="small">Hybrid RPG</div></div>
+    <div class="muted small" id="saveIndicator">Saved</div>
+  </div>
+  <h1>⚔️ Debt Quest — Hybrid RPG Payoff</h1>
 
-<h2>⚔️ Debt Quest – Adventure Mode</h2>
-<div class="card" id="create_screen">
-    <h3>Add Debt Enemy</h3>
-    <input id="name" placeholder="Name (e.g. Chase)" />
-    <input id="balance" placeholder="Balance" type="number" />
-    <button onclick="addEnemy()">Add</button>
-    <button style="background:#008cff;" onclick="startBattle()">Start Battle</button>
-</div>
+  <!-- SCREEN: Home / Add Enemies -->
+  <div id="screen-home" class="card">
+    <h3>Add Debt Enemies</h3>
+    <div class="row">
+      <div class="col">
+        <label>Enemy name</label>
+        <input id="inpName" placeholder="e.g., Chase Card (last 4)">
+      </div>
+      <div style="width:160px">
+        <label>Balance ($)</label>
+        <input id="inpBal" type="number" placeholder="e.g., 2500">
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnAdd">Add Enemy</button>
+      <button id="btnClear" class="ghost">Clear All</button>
+    </div>
+    <div style="margin-top:12px">
+      <label>Enemies</label>
+      <div id="enemyList" class="enemy-list"></div>
+    </div>
+    <div style="margin-top:12px" class="controls">
+      <button id="btnChoose" style="flex:1">Choose Strategy & Enter Battle</button>
+      <button id="btnExport" class="ghost">Export CSV</button>
+    </div>
+    <div class="muted small" style="margin-top:8px">Each payment is an attack on an enemy.</div>
+  </div>
 
-<div id="enemy_list"></div>
+  <!-- SCREEN: Weapon / Strategy Selection -->
+  <div id="screen-weapons" class="card hidden">
+    <h3>Choose Your Weapon (Strategy)</h3>
+    <div class="muted small">Weapons change your damage multipliers.</div>
+    <div class="weapons">
+      <div class="weapon" data-id="hammer">
+        <strong>War Hammer</strong>
+        <div class="small">+15% damage</div>
+      </div>
+      <div class="weapon" data-id="rapier">
+        <strong>Rapier</strong>
+        <div class="small">20% crit chance, +80% damage on crit</div>
+      </div>
+      <div class="weapon" data-id="spear">
+        <strong>Spear</strong>
+        <div class="small">80% to target + 30% splash</div>
+      </div>
+    </div>
 
-<div class="card" id="battle">
-    <h3 id="battle_title"></h3>
-    <div class="health-bg"><div class="health-bar" id="hp_bar"></div></div>
-    <p id="hp_text"></p>
-    <input id="attack" type="number" placeholder="Payment amount" />
-    <button onclick="attackEnemy()">Attack!</button>
+    <div class="controls">
+      <button id="btnStartBattle">Start Battle</button>
+      <button id="btnBackHome" class="ghost">Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Battle -->
+  <div id="screen-battle" class="card hidden">
+    <div class="flex" style="justify-content:space-between;align-items:center">
+      <div><strong id="battleTitle">Battle</strong><div class="muted small" id="battleSub">Defeat debts to win.</div></div>
+      <div class="small">Enemies left: <span id="enLeft">0</span></div>
+    </div>
+
+    <div id="battleArena" style="margin-top:12px"></div>
+
+    <div style="margin-top:12px" class="row">
+      <div class="col">
+        <label>Payment amount ($)</label>
+        <input id="inpPayment" type="number" placeholder="enter payment amount">
+      </div>
+      <div style="width:120px">
+        <label>Attack</label>
+        <button id="btnAttack">Attack</button>
+      </div>
+    </div>
+
+    <div class="controls" style="margin-top:12px">
+      <button id="btnNext" class="ghost">Next Enemy</button>
+      <button id="btnEnd" class="ghost">End Run</button>
+    </div>
+
+    <div class="log" id="battleLog"></div>
+  </div>
+
+  <!-- SCREEN: Victory -->
+  <div id="screen-victory" class="card hidden center">
+    <h2>🏆 Victory!</h2>
+    <p class="muted">You defeated all debts — real progress!</p>
+    <div class="controls" style="justify-content:center">
+      <button id="btnRestart">Restart (clear)</button>
+      <button id="btnHome" class="ghost">Back Home</button>
+    </div>
+  </div>
+
+  <footer>Prototype — runs locally in your browser.</footer>
 </div>
 
 <script>
-let enemies = JSON.parse(localStorage.getItem("debt_enemies") || "[]");
-let current = 0;
+// --- State ---
+let state = { enemies:[], currentIndex:0, weapon:'hammer' };
+const $ = id=>document.getElementById(id);
 
-function save() { localStorage.setItem("debt_enemies", JSON.stringify(enemies)); renderList(); }
+// Save/load localStorage
+function save(){ localStorage.setItem('dq_state',JSON.stringify(state)); }
+function load(){ const d=localStorage.getItem('dq_state'); if(d) state=JSON.parse(d); }
 
+// Screens
+function showScreen(x){
+  ['home','weapons','battle','victory'].forEach(s=>$( `screen-${s}` ).classList.add('hidden'));
+  $(`screen-${x}`).classList.remove('hidden');
+  save();
+}
+
+// Home
+function renderEnemies(){
+  const box=$('enemyList'); box.innerHTML='';
+  if(!state.enemies.length) return box.innerHTML='<p class="muted small">No enemies yet</p>';
+  state.enemies.forEach((e,i)=>{
+    const div=document.createElement('div');
+    div.className='enemy';
+    div.innerHTML=`
+      <div class="meta"><strong>${e.name}</strong><div class="muted small">Balance: $${e.balance.toLocaleString()}</div></div>
+      <button class="ghost" style="font-size:12px" onclick="removeEnemy(${i})">Remove</button>`;
+    box.appendChild(div);
+  });
+  $('enLeft').textContent = state.enemies.length - state.currentIndex;
+}
 function addEnemy(){
-    let n = name.value.trim(), b = parseFloat(balance.value);
-    if(!n || !b || b<=0) return alert("Invalid");
-    enemies.push({name:n,hp:b,max:b});
-    save();
-    name.value=""; balance.value="";
+  const name=$('inpName').value.trim();
+  const bal=parseFloat($('inpBal').value);
+  if(!name||isNaN(bal)||bal<=0) return alert('Enter valid data');
+  state.enemies.push({name, balance:bal, max:bal});
+  $('inpName').value=''; $('inpBal').value='';
+  renderEnemies(); save();
+}
+function removeEnemy(i){ state.enemies.splice(i,1); renderEnemies(); save(); }
+
+// Weapons
+document.querySelectorAll('.weapon').forEach(w=>w.onclick=()=>{
+  document.querySelectorAll('.weapon').forEach(x=>x.classList.remove('sel'));
+  w.classList.add('sel');
+  state.weapon=w.dataset.id; save();
+});
+
+// Battle
+function renderBattleArena(){
+  const a=$('battleArena'); a.innerHTML='';
+  state.enemies.forEach((e,i)=>{
+    const div=document.createElement('div');
+    div.style.marginBottom='10px';
+    div.innerHTML=`
+      <div style="display:flex;justify-content:space-between;">
+        <div><strong>${e.name}</strong><div class="muted small">$${e.balance.toLocaleString()}</div></div>
+        <div class="muted small">${i===state.currentIndex?'Current':'Waiting'}</div>
+      </div>
+      <div class="hp-wrap"><div class="hp-bar" style="width:${(e.balance/e.max)*100}%"></div></div>`;
+    a.appendChild(div);
+  });
+}
+function appendLog(t){
+  $('battleLog').innerHTML = `<div>${t}</div>` + $('battleLog').innerHTML;
+}
+function attack(){
+  const amt=parseFloat($('inpPayment').value);
+  if(isNaN(amt)||amt<=0) return alert('Enter payment');
+  let dmg=amt, txt=`You pay $${amt.toLocaleString()}.`;
+
+  const w=state.weapon;
+  if(w==='hammer'){ dmg*=1.15; txt+=' War Hammer +15%.'; }
+  if(w==='rapier'){
+    if(Math.random()<0.2){ dmg*=1.8; txt+=' RAPID CRIT!'; }
+    else dmg*=1.05;
+  }
+  if(w==='spear'){
+    const spill=amt*0.3, main=amt*0.8;
+    dmg=main; txt+=` Spear: main + splash.`;
+    if(state.enemies[state.currentIndex+1])
+      state.enemies[state.currentIndex+1].balance=Math.max(0,state.enemies[state.currentIndex+1].balance-spill);
+  }
+
+  const e=state.enemies[state.currentIndex];
+  e.balance=Math.max(0,e.balance-dmg);
+  appendLog(txt);
+
+  if(e.balance<=0){
+    appendLog(`🎉 ${e.name} defeated!`);
+    state.currentIndex++;
+    if(state.currentIndex>=state.enemies.length)
+      return showScreen('victory');
+  }
+  renderBattleArena(); save();
 }
 
-function renderList(){
-    let div = document.getElementById("enemy_list");
-    div.innerHTML = "";
-    enemies.forEach((e,i)=>{
-        div.innerHTML += `<div class="enemy">
-            <b>${e.name}</b><br>💰 $${e.hp.toFixed(2)}
-        </div>`;
-    });
-}
-renderList();
+$('btnAttack').onclick=attack;
+$('btnNext').onclick=()=>{ state.currentIndex++; renderBattleArena(); save(); };
+$('btnEnd').onclick=()=>showScreen('home');
+$('btnRestart').onclick=()=>{ localStorage.removeItem('dq_state'); location.reload(); };
+$('btnHome').onclick=()=>showScreen('home');
 
-function startBattle(){
-    if(enemies.length===0) return alert("Add at least one!");
-    document.getElementById("battle").style.display="block";
-    loadEnemy();
-}
+$('btnAdd').onclick=addEnemy;
+$('btnClear').onclick=()=>{ if(confirm('Clear?')){ state.enemies=[]; save(); renderEnemies(); } };
+$('btnChoose').onclick=()=>{ if(!state.enemies.length) return alert('Add enemies'); showScreen('weapons'); };
+$('btnStartBattle').onclick=()=>{ state.currentIndex=0; showScreen('battle'); renderBattleArena(); appendLog('Battle started!'); save(); };
+$('btnBackHome').onclick=()=>showScreen('home');
 
-function loadEnemy(){
-    let e = enemies[current];
-    battle_title.innerText = "Enemy: " + e.name;
-    hp_text.innerText = `$${e.hp.toFixed(2)} / $${e.max.toFixed(2)}`;
-    hp_bar.style.width = (e.hp/e.max*100) + "%";
-}
-
-function attackEnemy(){
-    let dmg = parseFloat(document.getElementById("attack").value);
-    if(!dmg || dmg<=0) return;
-    enemies[current].hp -= dmg;
-    if(enemies[current].hp < 0) enemies[current].hp = 0;
-    save();
-    if(enemies[current].hp <= 0){
-        alert("🎉 Victory! Enemy defeated!");
-        current++;
-        if(current >= enemies.length){
-            alert("🏆 All debts defeated!");
-            document.getElementById("battle").style.display="none";
-            return;
-        }
-    }
-    loadEnemy();
-}
+load(); renderEnemies(); showScreen(state.enemies.length ? 'home' : 'home');
 </script>
-
 </body>
 </html>
